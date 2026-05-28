@@ -393,6 +393,7 @@ async function initPostgres(pgConfig) {
 
   isPostgres = true;
   logger.info('PostgreSQL database fully initialized.');
+  initVendorAccounts();
 }
 
 function initSQLite() {
@@ -566,6 +567,7 @@ function initSQLite() {
       stmt.finalize();
 
       logger.info('SQLite fallback database and schema initialized successfully.');
+      initVendorAccounts();
     });
   });
   isPostgres = false;
@@ -631,8 +633,7 @@ function initVendorAccounts() {
   logger.info('Vendor accounts initialized');
 }
 
-// Initialize vendor accounts after DB is ready
-setTimeout(() => initVendorAccounts(), 1000);
+// Initialize vendor accounts (called automatically when DB initialization completes)
 
 // ══════════ AUTH MIDDLEWARE ══════════
 async function authenticateToken(req, res, next) {
