@@ -1,16 +1,19 @@
+# Stage 1: Build the React frontend
+FROM node:18-alpine AS frontend-builder
+WORKDIR /app/frontend
+COPY frontend/package*.json ./
+RUN npm ci
+COPY frontend/ ./
+RUN npm run build
+
+# Stage 2: Set up the Node backend
 FROM node:18-alpine
-
 WORKDIR /app
-
-# Copy package files and install production dependencies
 COPY package*.json ./
 RUN npm ci --only=production
-
-# Copy application files
 COPY . .
+# Copy the compiled frontend build from the builder stage
+COPY --from=frontend-builder /app/frontend/build ./frontend/build
 
-# Expose the application port
 EXPOSE 3000
-
-# Start the application using PM2 (installed globally) or just node
 CMD ["node", "server.js"]
